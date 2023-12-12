@@ -1,0 +1,26 @@
+# Nginx
+virtualhosts:
+  - name: app1fgv
+    datos:
+      nameserver: www.app1fgv.org
+      documentroot: /var/www/pagina1
+      errorlog: error_pagina1
+      accesslog: access_pagina1
+  
+  - name: app2fgv
+    datos: 
+      nameserver: www.app2fgv.org
+      documentroot: /var/www/pagina2
+      errorlog: error_pagina2
+      accesslog: access_pagina2
+
+  - name: app3fgv
+    datos: 
+      nameserver: www.app3fgv.org
+      documentroot: /var/www/pagina3
+      errorlog: error_pagina3
+      accesslog: access_pagina3
+
+
+desactivar_virtualhost:
+  - name: app3fgv

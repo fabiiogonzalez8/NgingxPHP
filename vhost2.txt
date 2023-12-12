@@ -1,0 +1,21 @@
+server {
+	listen 80;
+
+	root /srv/www/pagina2;
+	index index.html index.htm index.php;
+
+	server_name www.pagina2.org;
+
+	error_log /var/log/nginx/error_pagina1.log;
+    access_log /var/log/nginx/access_pagina1.log;
+
+	location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+	location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass 127.0.0.1:9000;
+        } 
+
+}

@@ -1,0 +1,65 @@
+- name: Instalar nginx
+  apt:
+    pkg: nginx
+
+- name: Configuración de virtualhost
+  template: 
+    src: ../templates/etc/nginx/sites-available/vhost.j2
+    dest: /etc/nginx/sites-available/{{item["name"]}}.conf
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
+
+- name: Crear el document root si no existe
+  ansible.builtin.file:
+    path: /{{item["datos"]["documentroot"]}}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  with_items:
+    - "{{virtualhosts}}"
+
+
+- name: Crear los enlaces simbolicos para el sites enabled
+  file:
+    src: /etc/nginx/sites-available/{{item["name"]}}.conf
+    dest: /etc/nginx/sites-enabled/{{item["name"]}}.conf
+    state: link
+    mode: 0755
+  with_items:
+    - "{{virtualhosts}}"
+  notify: restart nginx
+  
+
+- name: Copiar index.html
+  copy:
+    src: ../files/index_{{item["name"]}}.html
+    dest: /{{item["datos"]["documentroot"]}}/index.html
+    owner: www-data
+    group: www-data
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
+
+
+- name: Copiar nuevodirectorio
+  copy:
+    src: nuevodirectorio
+    dest: /{{item["datos"]["documentroot"]}}/
+    owner: www-data
+    group: www-data
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
+  notify: restart nginx
+
+- name: Desactivar virtualhosts
+  file: 
+    path: /etc/nginx/sites-enabled/{{item["name"]}}.conf
+    state: absent
+  with_items:
+    - "{{desactivar_virtualhost}}"
+  notify: restart nginx
