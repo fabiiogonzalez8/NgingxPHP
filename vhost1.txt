@@ -1,0 +1,39 @@
+server {
+    listen 80;
+    server_name www.pagina1.org;
+    root /srv/www/pagina1;
+    index index.html index.htm index.php;
+
+    error_log /var/log/nginx/error_pagina1.log;
+    access_log /var/log/nginx/access_pagina1.log;
+
+    location / {
+        return 301 /principal;
+    }
+
+    location /principal {
+        autoindex off;                   # Deshabilitar la lista de directorios
+        disable_symlinks if_not_owner;  # Deshabilitar el seguimiento de enlaces simbólicos
+
+        try_files $uri $uri/ /principal/index.html;
+    }
+
+    location /principal/documentos {
+        alias /srv/doc;                   # Usar alias para especificar la ruta del documento
+        autoindex on;                    # Habilitar la lista de directorios en este caso
+
+        # Opcional: puedes agregar directivas adicionales aquí según tus necesidades
+    }
+
+    location /secreto {
+        auth_basic "Área restringida";   # Mensaje de autenticación básica
+        auth_basic_user_file /etc/nginx/.htpasswd;  # Ruta al archivo de usuarios y contraseñas
+
+        # Configuración adicional para la ubicación secreta
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass 127.0.0.1:9000;
+    }
+}

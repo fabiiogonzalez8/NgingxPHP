@@ -1,0 +1,14 @@
+- name: Instalar php y php-fpm
+  apt: 
+    pkg: php8.2
+    pkg: php8.2-fpm
+
+- name: Copiar info-php
+  copy:
+    src: ../files/info.php
+    dest: /{{item["datos"]["documentroot"]}}/
+    owner: www-data
+    group: www-data
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
